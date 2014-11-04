@@ -21,6 +21,14 @@ then ask stockfish for which was the best move at a given position.
 It is true that it gives you opportunity to cheat but it will not make you a great player 
 nor enjoy the truely sense of chess that is: on the board you can't lie to yourself.
 
+
+Dependencies
+============
+
+Stockfish
+
+
+
 Install
 =======
 
@@ -35,6 +43,7 @@ This is a short script to run the latest version of steinitz.
     cd steinitz-code
     git clone git@github.com:iogf/steinitz.git steinitz-code
     python setup.py install
+
 
 Videos
 ======
@@ -52,4 +61,5 @@ Steinitz is 95% done.
 Old Repository
 ==============
 git clone ssh://olliveira@git.code.sf.net/p/steinitz/code steinitz-code
+
 

@@ -26,6 +26,7 @@ Dependencies
 ============
 
 Stockfish
+
 untwisted
 
 
@@ -61,6 +62,7 @@ Steinitz is 95% done.
 Old Repository
 ==============
 git clone ssh://olliveira@git.code.sf.net/p/steinitz/code steinitz-code
+
 
 
 

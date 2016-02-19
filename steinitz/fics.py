@@ -1,5 +1,6 @@
-from untwisted.network import get_event, spawn
-from untwisted.utils.shrug import FOUND
+from untwisted.network import spawn
+from untwisted.event import get_event
+from untwisted.splits import FOUND
 from re import *
 
 GENERAL_STR = '[^ ]+' 
@@ -19,7 +20,7 @@ SAY           = get_event()
 SHOUT         = get_event()
 
 def install(spin):
-    spin.link(FOUND, spliter)
+    spin.add_map(FOUND, spliter)
 
 def spliter(spin, data):
     m = findall(GENERAL_REG, data)
@@ -65,6 +66,7 @@ def spliter(spin, data):
         pass
     else:
         spawn(spin, SHOUT, nick, mode, msg)
+
 
 
 

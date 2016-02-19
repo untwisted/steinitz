@@ -4,14 +4,14 @@
 
 from Tkinter import *
 
-from socket import *
 
 # Basic untwisted imports.
-from untwisted.network import *
-from untwisted.utils.stdio import *
+from untwisted.network import core, Spin
+from untwisted.iostd import Client, Stdin, Stdout, DUMPED, CONNECT, CONNECT_ERR, CLOSE, LOAD
+from untwisted.tools import coroutine
 
 # As fics protocol is token based we use Shrug to tokenize msgs.
-from untwisted.utils.shrug import *
+from untwisted.splits import Shrug, FOUND
 
 # This is a basic implementation for fics protocol.
 # It basically splits msgs into fields. These fields
@@ -34,6 +34,7 @@ from steinitz.clock import *
 from steinitz.chat import *
 from steinitz.askrating import *
 from steinitz.utils import fenstring, init, rsc, stockfish
+from socket import *
 
 
 class App(Tk):
@@ -370,40 +371,39 @@ class App(Tk):
         Client(self.con)
        
         # It maps CONNECT to send_ident.
-        self.con.link(CONNECT, self.send_ident) 
-        self.con.link(CONNECT_ERR, lambda con, err: lose(con))
-        self.con.link(CONNECT_ERR, lambda con, err: self.update_text(con, 'Connection failed.'))
+        self.con.add_map(CONNECT, self.send_ident) 
+        self.con.add_map(CONNECT_ERR, lambda con, err: self.update_text(con, 'Connection failed.'))
+        self.con.add_map(CONNECT_ERR, lambda con, err: lose(con))
 
         self.con.connect_ex((host, port))
 
+    @coroutine
     def send_ident(self, con):
         # Basic untwisted protocols required by fics protocol.
         Stdin(self.con)
         Stdout(self.con)
         Shrug(self.con, '\n\r')
-
         # Finally we install fics protocol.
         fics.install(self.con)
         
         # If it happens of the server closing
         # the connection then we just close the socket
         # and destroy it.
-        self.con.link(CLOSE, lambda con, err: lose(con))
+        self.con.add_map(CLOSE, lambda con, err: lose(con))
 
          # Whenever it comes data we print it on our console.
-        self.con.link(FOUND, self.update_text)
+        self.con.add_map(FOUND, self.update_text)
 
         # The '<12>' is an event issued by fics protocol
         # it means you are either playing a game or examining a
         # game. In both case we need to update the state of the
         # board.
-        self.con.link('<12>', self.update_state)
+        self.con.add_map('<12>', self.update_state)
 
         # It waits for the user sending login
         # when the session starts we can send style 12.
 
-        event, args = yield hold(con, fics.START_SESSION)
-
+        args          = yield con, fics.START_SESSION
         self.username = args[1]
         self.con.dump('set style 12\r\n')
 
@@ -495,7 +495,7 @@ class App(Tk):
 
     def open_shouts_channel(self):
         chat = Chat(self, lambda data: self.con.dump('shout %s\r\n' % data), 'Shouts', self.username)
-        self.con.link(fics.SHOUT, lambda con, nick, mode, msg: chat.update_text('%s shouts%s %s' % (nick, mode, msg)))
+        self.con.add_map(fics.SHOUT, lambda con, nick, mode, msg: chat.update_text('%s shouts%s %s' % (nick, mode, msg)))
 
         # i must umap after the window is destroyed.
         # chat.protocol('WM_DELETE_WINDOW', self.cancel)
@@ -504,8 +504,8 @@ class App(Tk):
         nick = askstring('Nick', 'Nick:')
         chat = Chat(self, lambda data: self.con.dump('tell %s %s\r\n' % (nick, data)), nick, self.username)
 
-        self.con.link('%s tells you:' % nick, lambda con, mode, msg: chat.update_text('<%s>%s' % (nick, msg)))
-        self.con.link('%s says:' % nick, lambda con, mode, msg: chat.update_text('<%s>%s' % (nick, msg)))
+        self.con.add_map('%s tells you:' % nick, lambda con, mode, msg: chat.update_text('<%s>%s' % (nick, msg)))
+        self.con.add_map('%s says:' % nick, lambda con, mode, msg: chat.update_text('<%s>%s' % (nick, msg)))
 
     def white_best_move(self):
         last_state    = list(self.last_state)
@@ -547,6 +547,7 @@ if __name__ == '__main__':
     app = App()
     app.mainloop()
         
+
 
 
 

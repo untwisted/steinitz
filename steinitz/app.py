@@ -403,8 +403,7 @@ class App(Tk):
         # It waits for the user sending login
         # when the session starts we can send style 12.
 
-        args          = yield con, fics.START_SESSION
-        self.username = args[1]
+        self.username, = yield con, fics.START_SESSION
         self.con.dump('set style 12\r\n')
 
     def play_best_move(self):
@@ -547,6 +546,7 @@ if __name__ == '__main__':
     app = App()
     app.mainloop()
         
+
 
 
 

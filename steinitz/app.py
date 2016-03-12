@@ -11,7 +11,7 @@ from untwisted.iostd import Client, Stdin, Stdout, DUMPED, CONNECT, CONNECT_ERR,
 from untwisted.tools import coroutine
 
 # As fics protocol is token based we use Shrug to tokenize msgs.
-from untwisted.splits import Shrug, FOUND
+from untwisted.splits import Shrug
 
 # This is a basic implementation for fics protocol.
 # It basically splits msgs into fields. These fields
@@ -392,7 +392,7 @@ class App(Tk):
         self.con.add_map(CLOSE, lambda con, err: lose(con))
 
          # Whenever it comes data we print it on our console.
-        self.con.add_map(FOUND, self.update_text)
+        self.con.add_map(Shrug.FOUND, self.update_text)
 
         # The '<12>' is an event issued by fics protocol
         # it means you are either playing a game or examining a
@@ -546,6 +546,7 @@ if __name__ == '__main__':
     app = App()
     app.mainloop()
         
+
 
 
 

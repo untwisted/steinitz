@@ -1,4 +1,5 @@
 from Tkinter import *
+from steinitz.utils import rsc
 
 class Seek(Toplevel):
     def __init__(self, root):
@@ -13,8 +14,8 @@ class Seek(Toplevel):
 
         self.frame1 = Frame(master=self, padx=5, pady=5, border=3, relief=RAISED)
 
-        self.img1 = PhotoImage(master=self.frame1, file='icon/wp.gif')
-        self.img2 = PhotoImage(master=self.frame1, file='icon/bp.gif')
+        self.img1 = PhotoImage(master=self.frame1, file=rsc('icon', 'wp.gif'))
+        self.img2 = PhotoImage(master=self.frame1, file=rsc('icon', 'bp.gif'))
 
         self.color = StringVar()
 
@@ -93,6 +94,7 @@ class Seek(Toplevel):
 
     def __call__(self):
         return self.info
+
 
 
 

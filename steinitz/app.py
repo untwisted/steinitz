@@ -1,5 +1,4 @@
-""" Name: steinitz.py
-    Description: This module is responsible by setting up steinitz interface.
+""" 
 """
 
 from Tkinter import *
@@ -7,11 +6,11 @@ from Tkinter import *
 
 # Basic untwisted imports.
 from untwisted.network import core, Spin
-from untwisted.iostd import Client, Stdin, Stdout, DUMPED, CONNECT, CONNECT_ERR, CLOSE, LOAD
+from untwisted.iostd import Client, Stdin, Stdout, lose, DUMPED, CONNECT, CONNECT_ERR, CLOSE, LOAD
 from untwisted.tools import coroutine
 
 # As fics protocol is token based we use Shrug to tokenize msgs.
-from untwisted.splits import Shrug
+from untwisted.splits import Terminator
 
 # This is a basic implementation for fics protocol.
 # It basically splits msgs into fields. These fields
@@ -382,7 +381,7 @@ class App(Tk):
         # Basic untwisted protocols required by fics protocol.
         Stdin(self.con)
         Stdout(self.con)
-        Shrug(self.con, '\n\r')
+        Terminator(self.con, '\n\r')
         # Finally we install fics protocol.
         fics.install(self.con)
         
@@ -392,7 +391,7 @@ class App(Tk):
         self.con.add_map(CLOSE, lambda con, err: lose(con))
 
          # Whenever it comes data we print it on our console.
-        self.con.add_map(Shrug.FOUND, self.update_text)
+        self.con.add_map(Terminator.FOUND, self.update_text)
 
         # The '<12>' is an event issued by fics protocol
         # it means you are either playing a game or examining a
@@ -546,6 +545,8 @@ if __name__ == '__main__':
     app = App()
     app.mainloop()
         
+
+
 
 
 

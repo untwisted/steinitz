@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python2
 
 from Tkinter import Tk
 from steinitz.app import App
@@ -6,6 +6,7 @@ from steinitz.app import App
 if __name__ == '__main__':
     app = App()
     app.mainloop()
+
 
 
 

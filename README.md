@@ -21,47 +21,32 @@ then ask stockfish for which was the best move at a given position.
 It is true that it gives you opportunity to cheat but it will not make you a great player 
 nor enjoy the truely sense of chess that is: on the board you can't lie to yourself.
 
-
-Dependencies
-============
-
-Stockfish
-
-untwisted
-
-
 Install
 =======
 
-This is a short script to run the latest version of steinitz.
-
-    cd /tmp
-    
-    git clone git://git.code.sf.net/p/untwisted/code untwisted-code
-    cd untwisted-code
-    python setupp.py install
-    
-    cd steinitz-code
-    git clone git@github.com:iogf/steinitz.git steinitz-code
-    python setup.py install
+It is first need to install the chess engine stockfish. After installing stockfish for your system
+just install steinitz with:
 
 
-Videos
-======
+    pip2 install untwisted
+    pip2 install steinitz
+
+
+It will install a python script named snz. In order to run steinitz
+just execute that script.
+
+~~~
+snz
+~~~
+
+It would launch steinitz application.
+
+A video
+=======
+
 https://www.youtube.com/watch?v=xv71Cmg_8pc&feature=youtu.be
 
-Observation
-===========
-Steinitz is under development, it was on sourceforge then i decided to bring it to github
-for some reasons. 
 
-There remains some features to be implemented, some of the menus don't work.
-Steinitz is 95% done.
-
-
-Old Repository
-==============
-git clone ssh://olliveira@git.code.sf.net/p/steinitz/code steinitz-code
 
 
 

@@ -80,26 +80,29 @@ def rsc(*args):
     return join(dirname(__file__), *args)
 
 
-def stockfish(state, depth=20):
+def stockfish(state, depth=20, path='stockfish'):
     from subprocess import Popen, PIPE
     from re import compile, search, DOTALL
 
     PATTERN_STR =  'bestmove (?P<move>[^\n ]+)'
     PATTERN_RE  = compile(PATTERN_STR, DOTALL)
     
-    pipe        = Popen('stockfish', stdin=PIPE, stdout=PIPE)
+    pipe        = Popen([path], stdin=PIPE, stdout=PIPE)
     fen         = fenstring(state)
-
+    print fen
     pipe.stdin.write('isready\n')
     pipe.stdin.write('%s\n' % fen)
     pipe.stdin.write('go depth %s\n'  % depth)
+    import time
+    time.sleep(5)
     pipe.stdin.close()
 
     data  = pipe.stdout.read()
     field = search(PATTERN_RE, data) 
     move  = field.group('move')
-
     return move
+
+
 
 
 

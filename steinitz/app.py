@@ -5,9 +5,10 @@ from Tkinter import *
 
 
 # Basic untwisted imports.
-from untwisted.network import core, Spin
+from untwisted.network import core, Spin, once
 from untwisted.iostd import Client, Stdin, Stdout, lose, DUMPED, CONNECT, CONNECT_ERR, CLOSE, LOAD
 from untwisted.tools import coroutine
+from untwisted.expect import Expect, LOAD, CLOSE
 
 # As fics protocol is token based we use Shrug to tokenize msgs.
 from untwisted.splits import Terminator
@@ -32,9 +33,11 @@ from steinitz.board import *
 from steinitz.clock import *
 from steinitz.chat import *
 from steinitz.askrating import *
-from steinitz.utils import fenstring, init, rsc, stockfish
+from steinitz.utils import fenstring, init, rsc
 from socket import *
-
+from steinitz import stockfish
+import shelve
+import os
 
 class App(Tk):
     def __init__(self):
@@ -45,6 +48,21 @@ class App(Tk):
         # At this point we have no connection initialized
         # we just assign None to self.con to map this state.
         self.con = None
+
+        setting = shelve.open(os.path.join(os.path.expanduser('~'), '.snz'))
+        self.stockfish_depth = setting.get('depth', 20)
+        self.stockfish_path = setting.get('path', 'stockfish')
+        setting.close()
+    
+        self.stockfish = Expect('stockfish')
+        Terminator(self.stockfish, delim='\n')
+        stockfish.install(self.stockfish)
+
+        def quit():
+            self.stockfish.terminate()
+            self.destroy()
+
+        self.protocol('WM_DELETE_WINDOW', quit)
 
         self.title('Steinitz')
         self.menubar = Menu(master=self)
@@ -137,9 +155,6 @@ class App(Tk):
         self.menu2.add_command(label='Shouts', command=self.open_shouts_channel)
         self.menu2.add_command(label='Private Message', command=self.open_private_message)
         self.menu2.add_command(label='Channel', command=self.open_channel_message)
-        self.menu2.add_separator()
-        self.menu2.add_command(label='Friend Notify', command=self.unplug)
-        self.menu2.add_command(label='Game Notify', command=self.unplug)
         self.menubar.add_cascade(label='Utils', menu=self.menu2)
         self.menu3 = Menu(self.menubar, tearoff = 0)
         self.menu3.add_command(label='Examine Game', command=self.examine_game)
@@ -148,12 +163,6 @@ class App(Tk):
         self.menu3.add_separator()
         self.menu3.add_command(label='Observe Game', command=self.observe_game)
         self.menu3.add_command(label='Unobserve Game', command=self.unobserve_game)
-        self.menu3.add_separator()
-        self.menu3.add_command(label='View Statiscs', command=self.view_statistics)
-        self.menu3.add_command(label='View User Statistics', command=self.view_user_statistics)
-        self.menu3.add_separator()
-        self.menu3.add_command(label='View History', command=self.view_history)
-        self.menu3.add_command(label='View User History', command=self.view_user_history)
         self.menubar.add_cascade(label='Tools', menu=self.menu3)
 
         self.menu4 = Menu(self.menubar, tearoff = 0)
@@ -167,9 +176,6 @@ class App(Tk):
         self.menu5.add_command(label='Black Best Move', command=self.black_best_move)
         self.menu5.add_separator()
         self.menu5.add_command(label='Play Best Move', command=self.play_best_move)
-        self.menu5.add_separator()
-        self.menu5.add_command(label='Black Last Move Score', command=self.black_last_move_score)
-        self.menu5.add_command(label='White Last Move Score', command=self.white_last_move_score)
         self.menu5.add_separator()
         self.menu5.add_command(label='Engine Setup', command=self.setup_engine)
         self.menubar.add_cascade(label='Engine', menu=self.menu5)
@@ -330,7 +336,6 @@ class App(Tk):
         self.bind('<F1>', lambda widget: self.board.incshape())
         self.bind('<F2>', lambda widget: self.board.decshape()) 
 
-        self.stockfish_depth = 20
         # We initialize the process of reading from the socket.
         # It basically tells untwisted core to start listening for
         # reading, writting processes.
@@ -406,9 +411,10 @@ class App(Tk):
         self.con.dump('set style 12\r\n')
 
     def play_best_move(self):
-        from steinitz.utils import stockfish
-        move = stockfish(self.last_state)
-        self.con.dump('%s\r\n' % move)
+        fen = fenstring(self.last_state)
+        self.stockfish.send('%s\n' % fen)
+        self.stockfish.send('go depth %s\n' % self.stockfish_depth)
+        once(self.stockfish, stockfish.BESTMOVE, lambda expect, move: self.con.dump('%s\r\n' % move))
 
     def black_last_move_score(self):
         pass
@@ -466,7 +472,13 @@ class App(Tk):
         self.last_state = args
 
     def setup_engine(self):
-        self_stockfish_depth = askstring('Stockfish Depth', 'Depth:', initialvalue='20')
+        self.stockfish_depth = askstring('Stockfish Depth', 'Depth:', initialvalue=self.stockfish_depth)
+        self.stockfish_path = askstring('Engine Path', 'Engine Path:', initialvalue=self.stockfish_path)
+
+        setting = shelve.open(os.path.join(os.path.expanduser('~'), '.snz'))
+        setting['depth'] = self.stockfish_depth
+        setting['path'] = self.stockfish_path
+        setting.close()
 
     def set_rating_range(self):
         AskRating(self, self.con)
@@ -508,14 +520,18 @@ class App(Tk):
     def white_best_move(self):
         last_state    = list(self.last_state)
         last_state[8] = 'W'
-        move          = stockfish(last_state, self.stockfish_depth)
-        showinfo('White best move in the position', move)
+        fen = fenstring(self.last_state)
+        self.stockfish.send('%s\n' % fen)
+        self.stockfish.send('go depth %s\n' % self.stockfish_depth)
+        once(self.stockfish, stockfish.BESTMOVE, lambda expect, move: showinfo('White best move in the position', move))
 
     def black_best_move(self):
         last_state    = list(self.last_state)
         last_state[8] = 'B'
-        move          = stockfish(last_state, self.stockfish_depth)
-        showinfo('Black best move in the position', move)
+        fen = fenstring(self.last_state)
+        self.stockfish.send('%s\n' % fen)
+        self.stockfish.send('go depth %s\n' % self.stockfish_depth)
+        once(self.stockfish, stockfish.BESTMOVE, lambda expect, move: showinfo('Black best move in the position', move))
 
     def open_channel_message(self):
         pass
@@ -545,6 +561,11 @@ if __name__ == '__main__':
     app = App()
     app.mainloop()
         
+
+
+
+
+
 
 
 

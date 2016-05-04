@@ -50,7 +50,7 @@ class App(Tk):
         self.con = None
 
         setting = shelve.open(os.path.join(os.path.expanduser('~'), '.snz'))
-        self.stockfish_depth = setting.get('depth', 20)
+        self.stockfish_depth = setting.get('depth', 10)
         self.stockfish_path = setting.get('path', 'stockfish')
         setting.close()
     
@@ -561,6 +561,7 @@ if __name__ == '__main__':
     app = App()
     app.mainloop()
         
+
 
 
 

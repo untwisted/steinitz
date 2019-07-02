@@ -1,4 +1,4 @@
-from Tkinter import *
+from tkinter import *
 
 class AskRating(Toplevel):
     def __init__(self, root, con):
@@ -58,7 +58,7 @@ class AskRating(Toplevel):
     def ok(self):
         (self.entry1.get(), self.entry2.get(), self.entry3.get(), self.entry4.get())
 
-        self.con.dump('set formula blitz=1 && rating>=%s && rating<=%s || standard=1 && rating>=%s && rating<=%s\r\n' % 
+        self.con.send_cmd('set formula blitz=1 && rating>=%s && rating<=%s || standard=1 && rating>=%s && rating<=%s\r\n' % 
                      (self.entry1.get(), self.entry2.get(), self.entry3.get(), self.entry4.get()))
         self.destroy()
 
@@ -67,6 +67,7 @@ class AskRating(Toplevel):
 
     def __call__(self):
         return self.value
+
 
 
 

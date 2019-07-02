@@ -1,7 +1,7 @@
 """ 
 """
 
-from Tkinter import *
+from tkinter import *
 
 
 # Basic untwisted imports.
@@ -16,15 +16,16 @@ from untwisted.splits import Terminator
 # This is a basic implementation for fics protocol.
 # It basically splits msgs into fields. These fields
 # are delimited by space.
+from steinitz.fics import Fics
 from steinitz import fics
 
 # We use it to show info.
-from tkMessageBox import showinfo
-from tkSimpleDialog import askstring, askinteger
+from tkinter.messagebox import showinfo
+from tkinter.simpledialog import askstring, askinteger
 
 # This module contains the Seek class 
 # that is used to seek games.
-from seek import *
+from steinitz.seek import *
 
 # Our board class. It is the abstraction of a chess board.
 from steinitz.board import *
@@ -35,7 +36,8 @@ from steinitz.chat import *
 from steinitz.askrating import *
 from steinitz.utils import fenstring, init, rsc
 from socket import *
-from steinitz import stockfish
+from steinitz.stock import Stockfish
+from steinitz import stock
 import shelve
 import os
 
@@ -50,16 +52,15 @@ class App(Tk):
         self.con = None
 
         setting = shelve.open(os.path.join(os.path.expanduser('~'), '.snz'))
-        self.stockfish_depth = setting.get('depth', 20)
-        self.stockfish_path = setting.get('path', 'stockfish')
+        self.stock_depth = setting.get('depth', 20)
+        self.stock_path = setting.get('path', 'stock')
         setting.close()
     
-        self.stockfish = Expect('stockfish')
-        Terminator(self.stockfish, delim='\n')
-        stockfish.install(self.stockfish)
+        self.stock = Expect('stockfish')
+        Stockfish(self.stock)
 
         def quit():
-            self.stockfish.terminate()
+            self.stock.terminate()
             self.destroy()
 
         self.protocol('WM_DELETE_WINDOW', quit)
@@ -74,75 +75,75 @@ class App(Tk):
         self.menu1.add_cascade(label='Rated White', menu=self.submenu1)
 
         self.submenu1.add_command(label='Blitz 3 0', 
-                                  command=lambda: self.con.dump('seek 3 0 rated white formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 3 0 rated white formula\r\n'))
         self.submenu1.add_command(label='Blitz 5 0', 
-                                  command=lambda: self.con.dump('seek 5 0 rated white formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 5 0 rated white formula\r\n'))
         self.submenu1.add_separator()
         self.submenu1.add_command(label='Standard 10 0', 
-                                  command=lambda: self.con.dump('seek 10 0 rated white formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 10 0 rated white formula\r\n'))
         self.submenu1.add_command(label='Standard 15 0', 
-                                  command=lambda: self.con.dump('seek 15 0 rated white formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 15 0 rated white formula\r\n'))
         self.submenu1.add_command(label='Standard 20 0',
-                                  command=lambda: self.con.dump('seek 20 0 rated white formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 20 0 rated white formula\r\n'))
         self.submenu1.add_command(label='Standard 30 0',
-                                  command=lambda: self.con.dump('seek 30 0 rated white formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 30 0 rated white formula\r\n'))
         self.submenu1.add_command(label='Standard 60 0', 
-                                  command=lambda: self.con.dump('seek 60 0 rated white formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 60 0 rated white formula\r\n'))
         self.submenu2 = Menu(self.menubar, tearoff = 0)
         self.menu1.add_cascade(label='Unrated White', menu=self.submenu2)
         self.submenu2.add_command(label='Blitz 3 0', 
-                                  command=lambda: self.con.dump('seek 3 0 unrated white formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 3 0 unrated white formula\r\n'))
         self.submenu2.add_command(label='Blitz 5 0', 
-                                  command=lambda: self.con.dump('seek 5 0 unrated white formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 5 0 unrated white formula\r\n'))
         self.submenu2.add_separator()
         self.submenu2.add_command(label='Standard 10 0', 
-                                  command=lambda: self.con.dump('seek 10 0 unrated white formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 10 0 unrated white formula\r\n'))
         self.submenu2.add_command(label='Standard 15 0',
-                                  command=lambda: self.con.dump('seek 15 0 unrated white formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 15 0 unrated white formula\r\n'))
         self.submenu2.add_command(label='Standard 20 0',
-                                  command=lambda: self.con.dump('seek 20 0 unrated white formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 20 0 unrated white formula\r\n'))
         self.submenu2.add_command(label='Standard 30 0', 
-                                  command=lambda: self.con.dump('seek 30 0 unrated white formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 30 0 unrated white formula\r\n'))
         self.submenu2.add_command(label='Standard 60 0',
-                                  command=lambda: self.con.dump('seek 60 0 unrated white formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 60 0 unrated white formula\r\n'))
         self.menu1.add_separator()
         self.submenu3 = Menu(self.menubar, tearoff = 0)
         self.menu1.add_cascade(label='Rated Black', menu=self.submenu3)
         self.submenu3.add_command(label='Blitz 3 0', 
-                                  command=lambda: self.con.dump('seek 3 0 rated black formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 3 0 rated black formula\r\n'))
         self.submenu3.add_command(label='Blitz 5 0', 
-                                  command=lambda: self.con.dump('seek 5 0 rated black formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 5 0 rated black formula\r\n'))
         self.submenu3.add_separator()
         self.submenu3.add_command(label='Standard 10 0', 
-                                  command=lambda: self.con.dump('seek 10 0 rated black formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 10 0 rated black formula\r\n'))
         self.submenu3.add_command(label='Standard 15 0',
-                                  command=lambda: self.con.dump('seek 15 0 rated black formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 15 0 rated black formula\r\n'))
         self.submenu3.add_command(label='Standard 20 0', 
-                                  command=lambda: self.con.dump('seek 20 0 rated black formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 20 0 rated black formula\r\n'))
         self.submenu3.add_command(label='Standard 30 0', 
-                                  command=lambda: self.con.dump('seek 30 0 rated black formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 30 0 rated black formula\r\n'))
         self.submenu3.add_command(label='Standard 60 0', 
-                                  command=lambda: self.con.dump('seek 60 0 rated black formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 60 0 rated black formula\r\n'))
 
 
         self.submenu4 = Menu(self.menubar, tearoff = 0)
         self.menu1.add_cascade(label='Unrated Black', menu=self.submenu4)
 
         self.submenu4.add_command(label='Blitz 3 0', 
-                                  command=lambda: self.con.dump('seek 3 0 unrated black formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 3 0 unrated black formula\r\n'))
         self.submenu4.add_command(label='Blitz 5 0', 
-                                  command=lambda: self.con.dump('seek 5 0 unrated black formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 5 0 unrated black formula\r\n'))
         self.submenu4.add_separator()
         self.submenu4.add_command(label='Standard 10 0', 
-                                  command=lambda: self.con.dump('seek 10 0 unrated black formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 10 0 unrated black formula\r\n'))
         self.submenu4.add_command(label='Standard 15 0',
-                                  command=lambda: self.con.dump('seek 15 0 unrated black formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 15 0 unrated black formula\r\n'))
         self.submenu4.add_command(label='Standard 20 0', 
-                                  command=lambda: self.con.dump('seek 20 0 unrated black formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 20 0 unrated black formula\r\n'))
         self.submenu4.add_command(label='Standard 30 0', 
-                                  command=lambda: self.con.dump('seek 30 0 unrated black formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 30 0 unrated black formula\r\n'))
         self.submenu4.add_command(label='Standard 60 0', 
-                                  command=lambda: self.con.dump('seek 60 0 unrated black formula\r\n'))
+                                  command=lambda: self.con.send_cmd('seek 60 0 unrated black formula\r\n'))
 
         self.menu1.add_separator()
 
@@ -168,7 +169,7 @@ class App(Tk):
         self.menu4 = Menu(self.menubar, tearoff = 0)
         self.menu4.add_command(label='Connect', command=self.plug)
         self.menu4.add_separator()
-        self.menu4.add_command(label='Quit', command=lambda: self.con.dump('quit\r\n'))
+        self.menu4.add_command(label='Quit', command=lambda: self.con.send_cmd('quit\r\n'))
         self.menubar.add_cascade(label='Server', menu=self.menu4)
 
         self.menu5 = Menu(self.menubar, tearoff = 0)
@@ -187,7 +188,7 @@ class App(Tk):
 
         # It initializes board and pass self.frame1 as instance
         # it means it will stay inside frame1.
-        self.board = Board(self.frame1, send_move=lambda data: self.con.dump(data))
+        self.board = Board(self.frame1, send_move=lambda data: self.con.send_cmd(data))
 
         # We want it to expand.
         self.board.pack(expand=True)
@@ -240,25 +241,25 @@ class App(Tk):
         # Whenever one clicks on it it sends a takeback 1
         # to fics.
         self.button1 = Button(self.frame3, image=self.img1, 
-                              command = lambda :self.con.dump('takeback 1\r\n'))
+                              command = lambda :self.con.send_cmd('takeback 1\r\n'))
 
         # It asks for take back two moves.
         self.button2 = Button(self.frame3, image=self.img2, 
-                              command = lambda :self.con.dump('takeback 2\r\n'))
+                              command = lambda :self.con.send_cmd('takeback 2\r\n'))
 
         # It suggests draw to your opponent.
         self.button3 = Button(self.frame3, image=self.img3, 
-                              command = lambda :self.con.dump('draw\r\n'))
+                              command = lambda :self.con.send_cmd('draw\r\n'))
 
         
         # You just resign.
         self.button4 = Button(self.frame3, image=self.img4,
-                              command = lambda :self.con.dump('resign\r\n'))
+                              command = lambda :self.con.send_cmd('resign\r\n'))
         
         # You got in a bad position maybe it is time to abort
         # it sends request for aborting the game.
         self.button5 = Button(self.frame3, image=self.img5, 
-                              command = lambda :self.con.dump('abort\r\n'))
+                              command = lambda :self.con.send_cmd('abort\r\n'))
 
         self.button1.pack(side='left', expand=True, fill=BOTH)
         self.button2.pack(side='left', expand=True, fill=BOTH)
@@ -276,19 +277,19 @@ class App(Tk):
 
         # It goes back to the beginning of a game.
         self.button6 = Button(self.frame4, text='Start', image=self.img6,     
-                              command = lambda :self.con.dump('backward 999\r\n'))
+                              command = lambda :self.con.send_cmd('backward 999\r\n'))
 
         # It goes back one move.
         self.button7  = Button(self.frame4, text='Back', image=self.img7,
-                               command = lambda :self.con.dump('backward\r\n'))
+                               command = lambda :self.con.send_cmd('backward\r\n'))
 
         # It goes ahead one move.
         self.button8    = Button(self.frame4, text='Go', image=self.img8, 
-                                 command = lambda : self.con.dump('forward\r\n'))
+                                 command = lambda : self.con.send_cmd('forward\r\n'))
 
         # It goes to the end.
         self.button9   = Button(self.frame4, text='End', image=self.img9, 
-                                command = lambda :self.con.dump('forward 999\r\n'))
+                                command = lambda :self.con.send_cmd('forward 999\r\n'))
 
         self.button6.pack(side='left', expand=True, fill=X) 
         self.button7.pack(side='left', expand=True, fill=X) 
@@ -386,9 +387,9 @@ class App(Tk):
         # Basic untwisted protocols required by fics protocol.
         Stdin(self.con)
         Stdout(self.con)
-        Terminator(self.con, '\n\r')
+
         # Finally we install fics protocol.
-        fics.install(self.con)
+        Fics(self.con)
         
         # If it happens of the server closing
         # the connection then we just close the socket
@@ -408,13 +409,13 @@ class App(Tk):
         # when the session starts we can send style 12.
 
         self.username, = yield con, fics.START_SESSION
-        self.con.dump('set style 12\r\n')
+        self.con.send_cmd('set style 12\r\n')
 
     def play_best_move(self):
         fen = fenstring(self.last_state)
-        self.stockfish.send('%s\n' % fen)
-        self.stockfish.send('go depth %s\n' % self.stockfish_depth)
-        once(self.stockfish, stockfish.BESTMOVE, lambda expect, move: self.con.dump('%s\r\n' % move))
+        self.stock.send_cmd('%s\n' % fen)
+        self.stock.send_cmd('go depth %s\n' % self.stock_depth)
+        once(self.stock, stock.BESTMOVE, lambda expect, move: self.con.send_cmd('%s\r\n' % move))
 
     def black_last_move_score(self):
         pass
@@ -423,7 +424,7 @@ class App(Tk):
         pass
 
     def unplug(self):
-        self.con.dump('quit\r\n')
+        self.con.send_cmd('quit\r\n')
         self.con = None    
 
     def find(self):
@@ -431,14 +432,14 @@ class App(Tk):
         option = seek()
         data   = 'seek %s %s %s %s formula %s-%s\r\n' % option
 
-        self.con.dump(data)
+        self.con.send_cmd(data)
 
     def send_cmd(self, widget):
         data = self.entry.get()
         self.text.insert(END, '%s\n' % data)
         self.text.yview(MOVETO, 1.0)
         self.entry.delete(0, END)
-        self.con.dump('%s\r\n' % data)
+        self.con.send_cmd('%s\r\n' % data)
 
     def update_text(self, con, data):
         self.text.insert(END, '%s\n' % data)
@@ -472,12 +473,12 @@ class App(Tk):
         self.last_state = args
 
     def setup_engine(self):
-        self.stockfish_depth = askstring('Stockfish Depth', 'Depth:', initialvalue=self.stockfish_depth)
-        self.stockfish_path = askstring('Engine Path', 'Engine Path:', initialvalue=self.stockfish_path)
+        self.stock_depth = askstring('stock Depth', 'Depth:', initialvalue=self.stock_depth)
+        self.stock_path = askstring('Engine Path', 'Engine Path:', initialvalue=self.stock_path)
 
         setting = shelve.open(os.path.join(os.path.expanduser('~'), '.snz'))
-        setting['depth'] = self.stockfish_depth
-        setting['path'] = self.stockfish_path
+        setting['depth'] = self.stock_depth
+        setting['path'] = self.stock_path
         setting.close()
 
     def set_rating_range(self):
@@ -485,26 +486,26 @@ class App(Tk):
         
     def examine_game(self):
         num = askstring('Examine', 'Game Number:', initialvalue='')
-        self.con.dump('examine %s %s\r\n' % (self.username, num))
+        self.con.send_cmd('examine %s %s\r\n' % (self.username, num))
 
     def examine_user_game(self):
         nick = askstring('Examine', 'Nick:', initialvalue='')
         num = askstring('Examine', 'Game Number:', initialvalue='')
-        self.con.dump('examine %s %s\r\n' % (nick, num))
+        self.con.send_cmd('examine %s %s\r\n' % (nick, num))
 
     def unexamine_game(self):
-        self.con.dump('unexamine\r\n')
+        self.con.send_cmd('unexamine\r\n')
 
     def observe_game(self):
         num = askstring('Examine', 'Game Number/Nick', initialvalue='')
-        self.con.dump('observe %s\r\n' % num)
+        self.con.send_cmd('observe %s\r\n' % num)
 
     def unobserve_game(self):
         num = askstring('Examine', 'Game Number/Nick', initialvalue='')
-        self.con.dump('unobserve %s\r\n' % num)
+        self.con.send_cmd('unobserve %s\r\n' % num)
 
     def open_shouts_channel(self):
-        chat = Chat(self, lambda data: self.con.dump('shout %s\r\n' % data), 'Shouts', self.username)
+        chat = Chat(self, lambda data: self.con.send_cmd('shout %s\r\n' % data), 'Shouts', self.username)
         self.con.add_map(fics.SHOUT, lambda con, nick, mode, msg: chat.update_text('%s shouts%s %s' % (nick, mode, msg)))
 
         # i must umap after the window is destroyed.
@@ -512,7 +513,7 @@ class App(Tk):
 
     def open_private_message(self):
         nick = askstring('Nick', 'Nick:')
-        chat = Chat(self, lambda data: self.con.dump('tell %s %s\r\n' % (nick, data)), nick, self.username)
+        chat = Chat(self, lambda data: self.con.send_cmd('tell %s %s\r\n' % (nick, data)), nick, self.username)
 
         self.con.add_map('%s tells you:' % nick, lambda con, mode, msg: chat.update_text('<%s>%s' % (nick, msg)))
         self.con.add_map('%s says:' % nick, lambda con, mode, msg: chat.update_text('<%s>%s' % (nick, msg)))
@@ -521,17 +522,17 @@ class App(Tk):
         last_state    = list(self.last_state)
         last_state[8] = 'W'
         fen = fenstring(self.last_state)
-        self.stockfish.send('%s\n' % fen)
-        self.stockfish.send('go depth %s\n' % self.stockfish_depth)
-        once(self.stockfish, stockfish.BESTMOVE, lambda expect, move: showinfo('White best move in the position', move))
+        self.stock.send_cmd('%s\n' % fen)
+        self.stock.send_cmd('go depth %s\n' % self.stock_depth)
+        once(self.stock, stock.BESTMOVE, lambda expect, move: showinfo('White best move in the position', move))
 
     def black_best_move(self):
         last_state    = list(self.last_state)
         last_state[8] = 'B'
         fen = fenstring(self.last_state)
-        self.stockfish.send('%s\n' % fen)
-        self.stockfish.send('go depth %s\n' % self.stockfish_depth)
-        once(self.stockfish, stockfish.BESTMOVE, lambda expect, move: showinfo('Black best move in the position', move))
+        self.stock.send_cmd('%s\n' % fen)
+        self.stock.send_cmd('go depth %s\n' % self.stock_depth)
+        once(self.stock, stock.BESTMOVE, lambda expect, move: showinfo('Black best move in the position', move))
 
     def open_channel_message(self):
         pass
@@ -552,7 +553,7 @@ class App(Tk):
         seek = Seek(self)
         option = seek()
         data = 'seek %s %s %s %s formula %s-%s\r\n' % option
-        self.con.dump(data)
+        self.con.send_cmd(data)
 
 
 
@@ -561,6 +562,8 @@ if __name__ == '__main__':
     app = App()
     app.mainloop()
         
+
+
 
 
 

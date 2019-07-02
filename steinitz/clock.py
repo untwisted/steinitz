@@ -1,5 +1,5 @@
-from Tkinter import *
-from stopwatch import *
+from tkinter import *
+from .stopwatch import *
 from steinitz.utils import rsc
 
 class Clock(Frame):

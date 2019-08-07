@@ -16,14 +16,16 @@ class Stockfish:
         expect.send_cmd = self.send_cmd
 
     def send_cmd(self, data):
-        cmd = cmd.encode('utf-8')
+        cmd = data.encode('utf-8')
         self.expect.send(cmd)
 
     def tokenize(self, expect, data):
-        data = data.decode('utf-8')
+        data  = data.decode('utf-8')
         regex = search(PATTERN_RE, data) 
 
-        if regex: spawn(expect, BESTMOVE, field.group('move'))
+        if regex: 
+            spawn(expect, BESTMOVE, regex.group('move'))
     
+
 
 

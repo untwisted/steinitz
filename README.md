@@ -28,27 +28,18 @@ It is first need to install the chess engine stockfish. After installing stockfi
 just install steinitz with:
 
 
-    pip2 install untwisted
-    pip2 install steinitz
+    pip install untwisted
+    pip install steinitz
 
 
 It will install a python script named snz. In order to run steinitz
 just execute that script.
+
+**Note:** Steinitz runs on python3+ only.
 
 ~~~
 snz
 ~~~
 
 It would launch steinitz application.
-
-A video
-=======
-
-https://www.youtube.com/watch?v=xv71Cmg_8pc&feature=youtu.be
-
-
-
-
-
-
 

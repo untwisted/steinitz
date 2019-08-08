@@ -52,13 +52,8 @@ class App(Tk):
         self.con = None
 
         setting = shelve.open(os.path.join(os.path.expanduser('~'), '.snz'))
-<<<<<<< HEAD
-        self.stockfish_depth = setting.get('depth', 10)
-        self.stockfish_path = setting.get('path', 'stockfish')
-=======
         self.stock_depth = setting.get('depth', 20)
         self.stock_path = setting.get('path', 'stock')
->>>>>>> development
         setting.close()
     
         self.stock = Expect('stockfish')
@@ -587,7 +582,5 @@ if __name__ == '__main__':
 
 
 
-<<<<<<< HEAD
-=======
 
->>>>>>> development
+

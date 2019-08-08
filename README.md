@@ -28,7 +28,7 @@ It is first need to install the chess engine stockfish. After installing stockfi
 just install steinitz with:
 
 
-    pip install untwisted
+    pip install -r requirements.txt
     pip install steinitz
 
 
@@ -42,4 +42,5 @@ snz
 ~~~
 
 It would launch steinitz application.
+
 

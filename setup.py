@@ -1,7 +1,7 @@
 
 from distutils.core import setup
 setup(name="steinitz",
-      version="1.0.0",
+      version="2.0.0",
       packages=["steinitz"],
       scripts=['snz'],
       package_data={'steinitz': ['icon/*.gif', 'style/*/*.gif']},
@@ -12,6 +12,7 @@ setup(name="steinitz",
       keywords=['chess', 'fics', 'interface', 'stockfish', 'untwisted'],
       classifiers=[],
       description="A chess interface to fics built on top of untwisted")
+
 
 
 

@@ -1,4 +1,4 @@
-from Tkinter import *
+from tkinter import *
 from steinitz.utils import rsc
 
 class Seek(Toplevel):

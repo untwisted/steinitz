@@ -1,4 +1,4 @@
-from Tkinter import *
+from tkinter import *
 
 class Chat(Toplevel):
     def __init__(self, root, send, title, username='me'):

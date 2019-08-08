@@ -64,7 +64,7 @@ def fenstring(state):
         flag = flag + 'q'
 
     content = 'position fen %s %s %s' % (content, state[8].lower(), flag)
-    print 'flag', flag
+    print('flag', flag)
     return content
 
 def init():
@@ -89,7 +89,7 @@ def stockfish(state, depth=20, path='stockfish'):
     
     pipe        = Popen([path], stdin=PIPE, stdout=PIPE)
     fen         = fenstring(state)
-    print fen
+    print(fen)
     pipe.stdin.write('isready\n')
     pipe.stdin.write('%s\n' % fen)
     pipe.stdin.write('go depth %s\n'  % depth)

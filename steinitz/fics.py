@@ -1,4 +1,3 @@
-from untwisted.network import spawn
 from untwisted.event import get_event
 from untwisted.splits import Terminator
 from re import *
@@ -36,7 +35,7 @@ class Fics:
         data = data.decode('utf-8')
         m = findall(GENERAL_REG, data)
         
-        if m: spawn(con, *m)
+        if m: con.drive(*m)
         
         m = match(SESSION_REG, data)
         try:
@@ -44,7 +43,7 @@ class Fics:
         except:
             pass
         else:
-            spawn(con, START_SESSION, username)
+            con.drive(START_SESSION, username)
     
         m = match(TELL_REG, data) 
         try:
@@ -54,8 +53,8 @@ class Fics:
         except:
             pass
         else:
-            spawn(con, TELL, nick, mode, msg)
-            spawn(con, '%s tells you:' % nick, mode, msg)
+            con.drive(TELL, nick, mode, msg)
+            con.drive('%s tells you:' % nick, mode, msg)
     
         m = match(SAY_REG, data)
         try:
@@ -65,8 +64,8 @@ class Fics:
         except:
             pass
         else:
-            spawn(con, SAY, nick, mode, msg)
-            spawn(con, '%s says:' % nick, mode, msg)
+            con.drive(SAY, nick, mode, msg)
+            con.drive('%s says:' % nick, mode, msg)
     
         m = match(SHOUT_REG, data)
         try:
@@ -76,6 +75,6 @@ class Fics:
         except:
             pass
         else:
-            spawn(con, SHOUT, nick, mode, msg)
+            con.drive(SHOUT, nick, mode, msg)
     
 

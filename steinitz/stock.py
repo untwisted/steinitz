@@ -1,4 +1,3 @@
-from untwisted.network import spawn
 from untwisted.event import get_event
 from untwisted.splits import Terminator
 from re import compile, search, DOTALL
@@ -24,7 +23,7 @@ class Stockfish:
         regex = search(PATTERN_RE, data) 
 
         if regex: 
-            spawn(expect, BESTMOVE, regex.group('move'))
+            expect.drive(BESTMOVE, regex.group('move'))
     
 
 

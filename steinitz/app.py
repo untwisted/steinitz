@@ -5,10 +5,15 @@ from tkinter import *
 
 
 # Basic untwisted imports.
-from untwisted.network import core, Spin, once
-from untwisted.iostd import Client, Stdin, Stdout, lose, DUMPED, CONNECT, CONNECT_ERR, CLOSE, LOAD
+from untwisted.event import DUMPED, CONNECT, CONNECT_ERR, CLOSE, LOAD
+from untwisted.network import Spin
+from untwisted.client import Client, lose
+from untwisted.sock_writer import SockWriter
+from untwisted.sock_reader import SockReader
 from untwisted.tools import coroutine
-from untwisted.expect import Expect, LOAD, CLOSE
+from untwisted.expect import Expect
+from untwisted import core
+from socket import socket, AF_INET, SOCK_STREAM
 
 # As fics protocol is token based we use Shrug to tokenize msgs.
 from untwisted.splits import Terminator
@@ -385,8 +390,8 @@ class App(Tk):
     @coroutine
     def send_ident(self, con):
         # Basic untwisted protocols required by fics protocol.
-        Stdin(self.con)
-        Stdout(self.con)
+        SockWriter(self.con)
+        SockReader(self.con)
 
         # Finally we install fics protocol.
         Fics(self.con)

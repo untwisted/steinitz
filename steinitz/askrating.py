@@ -1,4 +1,4 @@
-from tkinter import *
+from tkinter import Toplevel, Frame, RAISED, Label, Entry, END, E, BOTH, Button
 
 class AskRating(Toplevel):
     def __init__(self, root, con):

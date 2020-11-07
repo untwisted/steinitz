@@ -1,4 +1,4 @@
-from tkinter import *
+from tkinter import Toplevel, RAISED, Frame, Scrollbar, Y, Text, Entry, X, BOTH, MOVETO, Tk, END
 
 class Chat(Toplevel):
     def __init__(self, root, send, title, username='me'):

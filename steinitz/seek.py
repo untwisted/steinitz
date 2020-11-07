@@ -1,4 +1,4 @@
-from tkinter import *
+from tkinter import Frame, PhotoImage, Label, E, BOTH, Toplevel, RAISED, StringVar, Radiobutton, X, Entry, END, Checkbutton, Button
 from steinitz.utils import rsc
 
 class Seek(Toplevel):

@@ -1,11 +1,11 @@
 """ 
 """
 
-from tkinter import *
-
+# from tkinter import *
+from tkinter import Tk, Menu, Frame, RAISED, BOTH, PhotoImage, Button, Scrollbar, Y, X, Text, Entry, END, MOVETO
 
 # Basic untwisted imports.
-from untwisted.event import DUMPED, CONNECT, CONNECT_ERR, CLOSE, LOAD
+from untwisted.event import CONNECT, CONNECT_ERR, CLOSE
 from untwisted.network import Spin
 from untwisted.client import Client, lose
 from untwisted.sock_writer import SockWriter
@@ -13,7 +13,6 @@ from untwisted.sock_reader import SockReader
 from untwisted.tools import coroutine
 from untwisted.expect import Expect
 from untwisted import core
-from socket import socket, AF_INET, SOCK_STREAM
 
 # As fics protocol is token based we use Shrug to tokenize msgs.
 from untwisted.splits import Terminator
@@ -30,17 +29,15 @@ from tkinter.simpledialog import askstring, askinteger
 
 # This module contains the Seek class 
 # that is used to seek games.
-from steinitz.seek import *
-
-# Our board class. It is the abstraction of a chess board.
-from steinitz.board import *
+from steinitz.seek import Seek
+from steinitz.board import Board
 
 # The clock class that will mark the time between moves.
-from steinitz.clock import *
-from steinitz.chat import *
-from steinitz.askrating import *
-from steinitz.utils import fenstring, init, rsc
-from socket import *
+from steinitz.clock import Clock
+from steinitz.chat import Chat
+from steinitz.askrating import AskRating
+from steinitz.utils import fenstring, rsc
+from socket import socket, AF_INET, SOCK_STREAM
 from steinitz.stock import Stockfish
 from steinitz import stock
 import shelve
@@ -160,7 +157,6 @@ class App(Tk):
         self.menu2 = Menu(self.menubar, tearoff = 0)
         self.menu2.add_command(label='Shouts', command=self.open_shouts_channel)
         self.menu2.add_command(label='Private Message', command=self.open_private_message)
-        self.menu2.add_command(label='Channel', command=self.open_channel_message)
         self.menubar.add_cascade(label='Utils', menu=self.menu2)
         self.menu3 = Menu(self.menubar, tearoff = 0)
         self.menu3.add_command(label='Examine Game', command=self.examine_game)
@@ -420,7 +416,7 @@ class App(Tk):
         fen = fenstring(self.last_state)
         self.stock.send_cmd('%s\n' % fen)
         self.stock.send_cmd('go depth %s\n' % self.stock_depth)
-        once(self.stock, stock.BESTMOVE, lambda expect, move: self.con.send_cmd('%s\r\n' % move))
+        self.stock.once(stock.BESTMOVE, lambda expect, move: self.con.send_cmd('%s\r\n' % move))
 
     def black_last_move_score(self):
         pass
@@ -431,13 +427,6 @@ class App(Tk):
     def unplug(self):
         self.con.send_cmd('quit\r\n')
         self.con = None    
-
-    def find(self):
-        seek   = Seek(self)
-        option = seek()
-        data   = 'seek %s %s %s %s formula %s-%s\r\n' % option
-
-        self.con.send_cmd(data)
 
     def send_cmd(self, widget):
         data = self.entry.get()
@@ -529,7 +518,7 @@ class App(Tk):
         fen = fenstring(self.last_state)
         self.stock.send_cmd('%s\n' % fen)
         self.stock.send_cmd('go depth %s\n' % self.stock_depth)
-        once(self.stock, stock.BESTMOVE, lambda expect, move: showinfo('White best move in the position', move))
+        self.stock.once(stock.BESTMOVE, lambda expect, move: showinfo('White best move in the position', move))
 
     def black_best_move(self):
         last_state    = list(self.last_state)
@@ -537,22 +526,7 @@ class App(Tk):
         fen = fenstring(self.last_state)
         self.stock.send_cmd('%s\n' % fen)
         self.stock.send_cmd('go depth %s\n' % self.stock_depth)
-        once(self.stock, stock.BESTMOVE, lambda expect, move: showinfo('Black best move in the position', move))
-
-    def open_channel_message(self):
-        pass
-
-    def view_statistics(self):
-        pass
-
-    def view_user_statistics(self):
-        pass
-
-    def view_history(self):
-        pass
-
-    def view_user_history(self):
-        pass
+        self.stock.once(stock.BESTMOVE, lambda expect, move: showinfo('Black best move in the position', move))
 
     def find(self):
         seek = Seek(self)

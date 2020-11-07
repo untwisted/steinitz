@@ -1,5 +1,5 @@
-from tkinter import *
-from steinitz.utils import *
+from tkinter import Tk, Frame, IntVar, PhotoImage, Radiobutton
+from steinitz.utils import rsc, setup, algebraic, side
 from os.path import join
 
 class Board(Frame):

@@ -1,4 +1,4 @@
-from tkinter import *
+from tkinter import Label
 
 class Stopwatch(Label):
     def __init__(self, count=0,  **args):

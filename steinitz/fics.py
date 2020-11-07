@@ -1,6 +1,6 @@
 from untwisted.event import get_event
 from untwisted.splits import Terminator
-from re import *
+from re import findall, match, compile
 
 GENERAL_STR = '[^ ]+' 
 GENERAL_REG = compile(GENERAL_STR)

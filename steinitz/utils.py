@@ -68,9 +68,7 @@ def fenstring(state):
     return content
 
 def init():
-    from os.path import expanduser, join, exists
-    
-    rc = join(expanduser('~'), 'snz.db')
+    from os.path import exists
     
     if not exists(dir):
         pass    

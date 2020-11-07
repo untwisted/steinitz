@@ -1,5 +1,5 @@
-from tkinter import *
-from .stopwatch import *
+from tkinter import Frame, PhotoImage, Label, E, W, BOTH, Tk
+from steinitz.stopwatch import Stopwatch
 from steinitz.utils import rsc
 
 class Clock(Frame):

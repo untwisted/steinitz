@@ -1,10 +1,12 @@
-from untwisted.event import get_event
+from untwisted.event import Event
 from untwisted.splits import Terminator
 from re import compile, search, DOTALL
 
 PATTERN_STR =  'bestmove (?P<move>[^\n ]+)'
 PATTERN_RE  = compile(PATTERN_STR, DOTALL)
-BESTMOVE    = get_event()
+
+class BESTMOVE(Event):
+    pass
 
 class Stockfish:
     def __init__(self, expect):

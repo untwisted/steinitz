@@ -1,4 +1,4 @@
-from untwisted.event import get_event
+from untwisted.event import Event
 from untwisted.splits import Terminator
 from re import findall, match, compile
 
@@ -13,10 +13,17 @@ SAY_REG     = compile(SAY_STR)
 SHOUT_STR   = '(?P<nick>[a-zA-Z]+)(?P<mode>.*) shouts:(?P<msg>.+)'
 SHOUT_REG   = compile(SHOUT_STR)
 
-START_SESSION = get_event()
-TELL          = get_event()
-SAY           = get_event()
-SHOUT         = get_event()
+class START_SESSION(Event):
+    pass
+
+class TELL(Event):
+    pass
+
+class SAY(Event):
+    pass
+
+class SHOUT(Event):
+    pass
 
 class Fics:
     def __init__(self, con):

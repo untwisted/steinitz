@@ -6,7 +6,7 @@ from tkinter import Tk, Menu, Frame, RAISED, BOTH, PhotoImage, Button, Scrollbar
 
 # Basic untwisted imports.
 from untwisted.event import CONNECT, CONNECT_ERR, CLOSE
-from untwisted.network import Spin
+from untwisted.network import SuperSocket
 from untwisted.client import Client, lose
 from untwisted.sock_writer import SockWriter
 from untwisted.sock_reader import SockReader
@@ -372,7 +372,7 @@ class App(Tk):
         sock = socket(AF_INET, SOCK_STREAM)
 
         # It wraps the socket so we can install protocols into it.
-        self.con = Spin(sock)
+        self.con = SuperSocket(sock)
         
         Client(self.con)
        
